@@ -1,3 +1,4 @@
+<div class="pull-right"><a href="/bills/new" class="btn btn-primary margin_bottom_10px">New Bill</a></div>
 <table class="table table-bordered bill_items">
   <tr>
     <th>Billno</th>

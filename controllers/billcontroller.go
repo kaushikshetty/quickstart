@@ -145,17 +145,19 @@ func (c *BillController) Create() {
   fmt.Printf("ID: %d, ERR: %v\n", id, err)
   if err == nil {
     for _, item := range bill_items {
-      billitem := new(models.Billitem)
-      billitem.Slno = item["sl_no"]
-      billitem.Particulars = item["particulars"]
-      item_qty_price, _ := strconv.ParseFloat(item["item_qty_price"], 64)
-      billitem.Itemqtyprice = item_qty_price
-      qty, _ := strconv.Atoi(item["quantity"])
-      billitem.Quantity = qty
-      price_per_unit, _ := strconv.ParseFloat(item["price_per_unit"], 64)
-      billitem.Priceperunit = price_per_unit
-      billitem.Bill = bill
-      o.Insert(billitem)
+      if (item["destroy"] == "false"){
+		    billitem := new(models.Billitem)
+		    //billitem.Slno = item["sl_no"]
+		    billitem.Particulars = item["particulars"]
+		    item_qty_price, _ := strconv.ParseFloat(item["item_qty_price"], 64)
+		    billitem.Itemqtyprice = item_qty_price
+		    qty, _ := strconv.Atoi(item["quantity"])
+		    billitem.Quantity = qty
+		    price_per_unit, _ := strconv.ParseFloat(item["price_per_unit"], 64)
+		    billitem.Priceperunit = price_per_unit
+		    billitem.Bill = bill
+		    o.Insert(billitem)
+     }
    }
  }
   url := "/bills/"+strconv.Itoa(int(id))
@@ -203,7 +205,7 @@ func (c *BillController) Edit() {
 
 func (c *BillController) Update() {
   bill_items := helpers.ParseFormCollection(c.Ctx.Input.Context.Request)
-  fmt.Println(bill_items)
+  //fmt.Println(bill_items)
   billid, _ := strconv.Atoi(c.Ctx.Input.Param(":id"))
   //bill := models.Bill{Id: billid}
   bill := new(models.Bill)
@@ -235,35 +237,45 @@ func (c *BillController) Update() {
   _, err := o.Update(bill, "Subtotal", "Grandtotal","Cgst","Sgst","Vehicleno","Billno", "Billto","Updated")
   if err == nil {
     for _, item := range bill_items {
-      if len(item) > 0 {
-	      billitemid, _ := strconv.Atoi(item["id"])//returns 0 if nil
-        if billitemid > 0 {
-			    billitem := models.Billitem{Id: billitemid}
-			    o.Read(&billitem)
-			    billitem.Slno = item["sl_no"]
-			    billitem.Particulars = item["particulars"]
-			    item_qty_price, _ := strconv.ParseFloat(item["item_qty_price"], 64)
-			    billitem.Itemqtyprice = item_qty_price
-			    qty, _ := strconv.Atoi(item["quantity"])
-			    billitem.Quantity = qty
-			    price_per_unit, _ := strconv.ParseFloat(item["price_per_unit"], 64)
-			    billitem.Priceperunit = price_per_unit
-          billitem.Updated = time.Now()
-		      o.Update(&billitem, "Slno", "Particulars","Itemqtyprice","Quantity","Priceperunit","Updated")
-       } else{
-          billitem := new(models.Billitem)
-          billitem.Slno = item["sl_no"]
-          billitem.Particulars = item["particulars"]
-          item_qty_price, _ := strconv.ParseFloat(item["item_qty_price"], 64)
-          billitem.Itemqtyprice = item_qty_price
-          qty, _ := strconv.Atoi(item["quantity"])
-          billitem.Quantity = qty
-          price_per_unit, _ := strconv.ParseFloat(item["price_per_unit"], 64)
-          billitem.Priceperunit = price_per_unit
-          billitem.Bill = bill
-          o.Insert(billitem)
-       } 
-		  }
+      fmt.Println(item)
+      billitemid, _ := strconv.Atoi(item["id"])
+      billitem := models.Billitem{Id: billitemid}
+      err := o.Read(&billitem)
+      if err == orm.ErrNoRows {
+        fmt.Println("new")
+        fmt.Println(billitemid)
+        billitem := new(models.Billitem)
+        billitem.Slno = item["sl_no"]
+        billitem.Particulars = item["particulars"]
+        item_qty_price, _ := strconv.ParseFloat(item["item_qty_price"], 64)
+        billitem.Itemqtyprice = item_qty_price
+        qty, _ := strconv.Atoi(item["quantity"])
+        billitem.Quantity = qty
+        price_per_unit, _ := strconv.ParseFloat(item["price_per_unit"], 64)
+        billitem.Priceperunit = price_per_unit
+        billitem.Bill = bill
+        o.Insert(billitem)
+      }else{
+        fmt.Println("edit")
+        fmt.Println(billitemid)
+        if (item["destroy"] == "true"){
+          fmt.Println("delete")
+          if num, err := o.Delete(&billitem); err == nil {
+            fmt.Println(num)
+          }
+        }else{
+		      billitem.Slno = item["sl_no"]
+				  billitem.Particulars = item["particulars"]
+				  item_qty_price, _ := strconv.ParseFloat(item["item_qty_price"], 64)
+				  billitem.Itemqtyprice = item_qty_price
+				  qty, _ := strconv.Atoi(item["quantity"])
+				  billitem.Quantity = qty
+				  price_per_unit, _ := strconv.ParseFloat(item["price_per_unit"], 64)
+				  billitem.Priceperunit = price_per_unit
+		      billitem.Updated = time.Now()
+			    o.Update(&billitem, "Slno", "Particulars","Itemqtyprice","Quantity","Priceperunit","Updated")
+       }
+      }
     }
   }
    url := "/bills/"+strconv.Itoa(int(billid))

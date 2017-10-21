@@ -21,16 +21,13 @@
       </td>
     </tr>
     <tr>
-      <th>Sl No.</th>
       <th>PARTICULARS</th>
       <th>Qty</th>
       <th>Price Per Unit</th>
       <th>Amount</th>
+      <th></th>
     </tr>
     <tr>
-      <td class="col-md-1">
-        <input type="number" class="form-control" name="bill_items[0][sl_no]" id="bill_items_0_sl_no">  
-      </td>
       <td class="col-md-5">
         <input type="text" class="form-control" name="bill_items[0][particulars]" id="bill_items_0_particulars">
       </td>
@@ -42,6 +39,12 @@
       </td>
       <td class="col-md-2">
         <input type="text" class="form-control item_qty_price" name="bill_items[0][item_qty_price]" id="bill_items_0_item_qty_price" onchange="calculate_sub_total();" value="0" readonly>
+      </td>
+      <td>
+        <a href="#" class="btn btn-info" onclick="removeItem(this); return false;">
+          <span class="glyphicon glyphicon-remove"></span>
+        </a>
+        <input type="hidden" name="bill_items[0][destroy]" value="false">
       </td>
     </tr>
   </table>

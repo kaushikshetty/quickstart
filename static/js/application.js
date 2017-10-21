@@ -8,8 +8,10 @@ function calculate_item_quantity(id){
 function calculate_sub_total(){
   sub_total = 0.0
   $('.item_qty_price').each(function(){
-    item_qty_price = $(this).val()
-    sub_total = sub_total + parseFloat(item_qty_price)
+    if($(this).parents('tr').find('input[type="hidden"]').val() == "false"){
+      item_qty_price = $(this).val()
+      sub_total = sub_total + parseFloat(item_qty_price)
+    }
   })
   $('#sub_total').val(parseFloat((sub_total).toFixed(2))).trigger("change");
 }
@@ -26,21 +28,13 @@ function calculate_grand_total(){
 }
 
 function add_item(){
-  id = $('.bill_items tr:last').find('input:first').attr('id').split('bill_items_')[1].split('_sl_no')[0]
-  if(id){
-    new_id = parseInt(id) + 1
-  } else{
-    new_id = 0
-  }
+  var new_id = new Date().getTime();
   string = "<tr>"
-    string += "<td class='col-md-1'>"
-      string += "<input type='number' class='form-control' name='bill_items["+new_id+"][sl_no]' id='bill_items_"+new_id+"_sl_no'>"  
-    string +="</td>"
     string += "<td class='col-md-5'>"
       string += "<input type='text' class='form-control' name='bill_items["+new_id+"][particulars]' id='bill_items_"+new_id+"_particulars'>"
     string += "</td>"
     string +="<td class='col-md-1'>"
-      string +="<input type='text' class='form-control' name='bill_items["+new_id+"][quantity]' onchange='calculate_item_quantity("+new_id+");'' id='bill_items_"+new_id+"_quantity'>"
+      string +="<input type='text' class='form-control' name='bill_items["+new_id+"][quantity]' onchange='calculate_item_quantity("+new_id+");' id='bill_items_"+new_id+"_quantity'>"
     string += "</td>"
     string += "<td class='col-md-2'>"
       string += "<input type='text' class='form-control' name='bill_items["+new_id+"][price_per_unit]'' onchange='calculate_item_quantity("+new_id+");' id='bill_items_"+new_id+"_price_per_unit'>"
@@ -48,6 +42,13 @@ function add_item(){
     string += "<td class='col-md-2'>"
       string += "<input type='text' class='form-control item_qty_price' name='bill_items["+new_id+"][item_qty_price]' id='bill_items_"+new_id+"_item_qty_price' onchange='calculate_sub_total();' value='0' readonly>"
     string += "</td>"
+    string +="<td><a href='#' class='btn btn-info' onclick='removeItem(this); return false;'><span class='glyphicon glyphicon-remove'></span></a><input type='hidden' name='bill_items["+new_id+"][destroy]' value='false'></td>"
   string +="</tr>"
   $('.bill_items tr:last').after(string);
+}
+
+function removeItem(current_link){
+  $(current_link).parents('tr').hide();
+  $(current_link).parent().find('input[type="hidden"]').val("true") 
+  calculate_sub_total();
 }

@@ -1,29 +1,49 @@
 package helpers
 import (
   "net/http"
-  "strconv"
+  //"strconv"
   "regexp"
   models "quickstart/models"
-  //"fmt"
+  "fmt"
 )
 func ParseFormCollection(r *http.Request)  []map[string]string {
   // reading nested attributes
   //form := c.Ctx.Input.Context.Request.Form
   form := r.Form
-  var bill_items []map[string]string
-  for key, values := range form {
+  var index []string
+  for key, _ := range form {
     re := regexp.MustCompile("bill_items" + "\\[([0-9]+)\\]\\[([a-zA-Z_]+)\\]")
     matches := re.FindStringSubmatch(key) // this will return [bill_items[0][sl_no], 0, sl_no]
     if len(matches) >= 3 {
-		  index, _ := strconv.Atoi(matches[1])
-		  for ; index >= len(bill_items); {
-			  bill_items = append(bill_items, map[string]string{})
-		  }
-      bill_items[index][matches[2]] = values[0] // this will add [bill_items[0][sl_no]=2 
+       i := matches[1]
+       if (!contains(index,i)){
+         index = append(index, i)
+         fmt.Println(index)
+       }
     }
-  
   }
+  var bill_items []map[string]string
+  for i :=0 ; i < len(index); i++{
+    bill_item := make(map[string]string)
+    bill_item["particulars"] = r.PostFormValue("bill_items["+ index[i] +"][particulars]")
+    bill_item["item_qty_price"] = r.PostFormValue("bill_items["+ index[i] +"][item_qty_price]")
+    bill_item["quantity"] = r.PostFormValue("bill_items["+ index[i] +"][quantity]")
+    bill_item["price_per_unit"] = r.PostFormValue("bill_items["+ index[i] +"][price_per_unit]")
+    bill_item["destroy"] = r.PostFormValue("bill_items["+ index[i] +"][destroy]")
+    bill_item["id"] = index[i]
+    bill_items = append(bill_items, bill_item)
+  }
+  //fmt.Println(bill_items)
   return bill_items
+}
+
+func contains(s []string, e string) bool {
+    for _, a := range s {
+        if a == e {
+            return true
+        }
+    }
+    return false
 }
 
 func BillPrintHtmlCode(bill models.Bill, billitems []*models.Billitem) string {

@@ -21,18 +21,14 @@
       </td>
     </tr>
     <tr>
-      <th>Sl No.</th>
       <th>PARTICULARS</th>
       <th>Qty</th>
       <th>Price Per Unit</th>
       <th>Amount</th>
+      <th></th>
     </tr>
     {{range $billitem := .billitems}}
-           <input type="hidden" name="bill_items[{{$billitem.Id}}][id]" value="{{$billitem.Id}}">
-	    <tr>
-	      <td class="col-md-1">
-		      <input type="number" class="form-control" name="bill_items[{{$billitem.Id}}][sl_no]" value={{$billitem.Slno}} id="bill_items_{{$billitem.Id}}_sl_no">  
-	      </td>
+	    <tr id="{{$billitem.Id}}">
 	      <td class="col-md-5">
 		      <input type="text" class="form-control" name="bill_items[{{$billitem.Id}}][particulars]" value={{$billitem.Particulars}} id="bill_items_{{$billitem.Id}}_particulars">
 	      </td>
@@ -45,6 +41,12 @@
 	      <td class="col-md-2">
 		      <input type="text" class="form-control item_qty_price" name="bill_items[{{$billitem.Id}}][item_qty_price]" id="bill_items_{{$billitem.Id}}_item_qty_price" onchange="calculate_sub_total();" value={{$billitem.Itemqtyprice}} readonly>
 	      </td>
+        <td>
+          <a href="#" class="btn btn-info" onclick="removeItem(this); return false;">
+            <span class="glyphicon glyphicon-remove"></span>
+          </a>
+          <input type="hidden" name="bill_items[{{$billitem.Id}}][destroy]" value="false">
+        </td>
 	    </tr>
    {{end}}
   </table>
