@@ -18,5 +18,5 @@ create table UserSession (
  LastSeenTime <time type> not null
 )
 
-When a user logs in to your site via a POST under TLS, Determine if the password is valid. Then issue a random session key, say 50 or more crypto rand characters and stuff in a secure Cookie. Add that session key to the UserSession table. Then when you see that user again, first hit the UserSession table to see if the SessionKey is in there with a valid LoginTime and LastSeenTime and User is not deleted. You could design it so a timer automatically clears out old rows in UserSession. 
+When a user logs in to your site via a POST under TLS, Determine if the password is valid. Then issue a random session key, say 50 or more crypto rand characters and stuff in a secure Cookie. Add that session key to the UserSession table. Then when you see that user again, first hit the UserSession table to see if the SessionKey is in there with a valid LoginTime and LastSeenTime and User is not deleted. You could design it so a timer automatically clears out old rows in UserSession.
 
