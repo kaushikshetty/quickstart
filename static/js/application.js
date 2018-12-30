@@ -18,8 +18,8 @@ function calculate_sub_total(){
 
 function calculate_grand_total(){
   sub_total = parseFloat($('#sub_total').val())
-  cgst = ((sub_total * 14.5)/100)
-  sgst = ((sub_total * 14.5)/100)
+  cgst = ((sub_total * 9)/100)
+  sgst = ((sub_total * 9)/100)
   grand_total = (sub_total + cgst + sgst)
   grand_total = parseFloat((grand_total).toFixed(2))
   $('#cgst').val(cgst)
